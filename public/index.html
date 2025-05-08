@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="htmx-config" content='{"selfRequestsOnly": false}'>
+    <title>Genshin Music Player</title>
+
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+      body {
+        background-color: #1e1e2f;
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .card {
+        background-color: #2a2a3f;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .card img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+
+      .info {
+        flex: 1;
+      }
+
+      audio {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+    </style>
+    
+  </head>
+  <body>
+    <h1>Genshin Music Player</h1>
+    
+    <div id="songs-list"
+     hx-get="https://us-central1-spa-0876.cloudfunctions.net/songs"
+     hx-trigger="load"
+     hx-swap="innerHTML">
+    </div>
+    <script>
+      function togglePlay(id) {
+        const audio = document.getElementById(`audio-${id}`);
+        const button = document.getElementById(`play-btn-${id}`);
+        const allAudio = document.querySelectorAll('audio');
+    
+        allAudio.forEach(a => {
+          if (a !== audio) a.pause();
+        });
+    
+        if (audio.paused) {
+          audio.play();
+          button.textContent = '⏸️ Pause';
+        } else {
+          audio.pause();
+          button.textContent = '▶️ Play';
+        }
+    
+        audio.onended = () => {
+          button.textContent = '▶️ Play';
+        };
+      }
+    </script>
+    <script>
+      const favoritedSongs = new Set(); // Optionally preload if needed
+    
+      function toggleHeart(event, id) {
+        const btn = document.getElementById(`heart-btn-${id}`);
+        const wasFavorited = favoritedSongs.has(id);
+    
+        if (wasFavorited) {
+          btn.textContent = '🤍';
+          favoritedSongs.delete(id);
+        } else {
+          btn.textContent = '❤️';
+          favoritedSongs.add(id);
+        }
+      }
+    </script>
+    
+  </body>
+</html>

@@ -1,0 +1,66 @@
+style.
+  .card {
+    background: #2a2a3f;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    color: white;
+  }
+
+  .card img {
+    width: 120px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .info h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+
+  audio {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+each song in data
+  .card
+    img(src=song.img, alt=song.chara)
+    .info
+      h3= song.title
+      p
+        strong Character: #{song.chara}
+      p
+        small Credits: #{song.credits}
+      audio(id=`audio-${song.id}`, src=song.musicFile)
+      button(onclick=`togglePlay(${song.id})`) ▶️ Play
+
+      form(
+        hx-post="https://us-central1-spa-0876.cloudfunctions.net/toggleFavorite",
+        hx-swap="none",
+        hx-on="htmx:afterRequest: toggleHeart(event, '${song.id}')"
+      )
+        input(type="hidden", name="songId", value=song.id)
+        button(type="submit" id=`heart-btn-${song.id}`) 🤍

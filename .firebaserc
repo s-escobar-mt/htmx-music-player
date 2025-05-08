@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "spa-0876",
+    "htmx": "spa-0876"
+  },
+  "targets": {},
+  "etags": {}
+}
