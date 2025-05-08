@@ -50,17 +50,21 @@ each song in data
     img(src=song.img, alt=song.chara)
     .info
       h3= song.title
-      p
+      p 
         strong Character: #{song.chara}
-      p
+      p 
         small Credits: #{song.credits}
       audio(id=`audio-${song.id}`, src=song.musicFile)
-      button(onclick=`togglePlay(${song.id})`) ▶️ Play
-
-      form(
-        hx-post="https://us-central1-spa-0876.cloudfunctions.net/toggleFavorite",
-        hx-swap="none",
-        hx-on="htmx:afterRequest: toggleHeart(event, '${song.id}')"
-      )
-        input(type="hidden", name="songId", value=song.id)
-        button(type="submit" id=`heart-btn-${song.id}`) 🤍
+      button(
+        id=`play-button-${song.id}`
+        onclick=`togglePlay(${song.id})`
+      ) ▶️ Play
+      input(type="hidden", name="songId", value=song.id)
+      button(
+        id=`favorite-button-${song.id}`
+        hx-post="https://us-central1-spa-0876.cloudfunctions.net/toggleFavorite"
+        hx-include="[name=songId]"
+        hx-swap="none"
+        onclick="toggleFavoriteIcon(this)"
+        data-favorited="false"
+      ) 🤍 Favorite

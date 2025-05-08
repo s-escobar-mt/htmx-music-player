@@ -63,45 +63,72 @@
      hx-trigger="load"
      hx-swap="innerHTML">
     </div>
+    <script defer src="/__/firebase/9.22.2/firebase-app.js"></script>
+    <script defer src="/__/firebase/9.22.2/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=false"></script>
+    <script>
+      import { doc, getDoc } from "firebase/firestore";
+      import { db } from "./firebase"; // Adjust the import according to your project structure
+    
+      async function checkIfFavorited(songId) {
+        const docRef = doc(db, "favorites", songId);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists();
+      }
+    
+      window.addEventListener('DOMContentLoaded', async () => {
+        const favoriteButtons = document.querySelectorAll('[id^="favorite-button-"]');
+        for (const button of favoriteButtons) {
+          const songId = button.querySelector('input[name="songId"]').value;
+          const isFavorited = await checkIfFavorited(songId);
+          if (isFavorited) {
+            button.textContent = '❤️ Toggle Favorite';
+            button.setAttribute('data-favorited', 'true');
+          }
+        }
+      });
+    </script>
     <script>
       function togglePlay(id) {
         const audio = document.getElementById(`audio-${id}`);
-        const button = document.getElementById(`play-btn-${id}`);
-        const allAudio = document.querySelectorAll('audio');
+        const button = document.getElementById(`play-button-${id}`);
     
+        if (!audio || !button) return;
+    
+        const allAudio = document.querySelectorAll('audio');
+        const allButtons = document.querySelectorAll('[id^="play-button-"]');
+    
+        // Pause all other audio
         allAudio.forEach(a => {
-          if (a !== audio) a.pause();
+          if (a.id !== `audio-${id}`) a.pause();
+        });
+    
+        // Reset all button icons
+        allButtons.forEach(btn => {
+          if (btn.id !== `play-button-${id}`) btn.textContent = '▶️ Play';
         });
     
         if (audio.paused) {
           audio.play();
-          button.textContent = '⏸️ Pause';
+          button.textContent = "⏸️ Pause";
         } else {
           audio.pause();
-          button.textContent = '▶️ Play';
+          button.textContent = "▶️ Play";
         }
-    
-        audio.onended = () => {
-          button.textContent = '▶️ Play';
-        };
       }
-    </script>
-    <script>
-      const favoritedSongs = new Set(); // Optionally preload if needed
     
-      function toggleHeart(event, id) {
-        const btn = document.getElementById(`heart-btn-${id}`);
-        const wasFavorited = favoritedSongs.has(id);
-    
-        if (wasFavorited) {
-          btn.textContent = '🤍';
-          favoritedSongs.delete(id);
+      function toggleFavoriteIcon(button) {
+        const isFavorited = button.getAttribute('data-favorited') === 'true';
+        if (isFavorited) {
+          button.textContent = '🤍 Favorite';
+          button.setAttribute('data-favorited', 'false');
         } else {
-          btn.textContent = '❤️';
-          favoritedSongs.add(id);
+          button.textContent = '❤️ Unfavorite';
+          button.setAttribute('data-favorited', 'true');
         }
       }
-    </script>
+    </script>    
+    
     
   </body>
 </html>
